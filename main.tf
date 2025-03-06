@@ -124,12 +124,12 @@ resource "aws_route_table_association" "web2_public_association" {
   subnet_id = aws_subnet.subnets[1].id
 }
 
-resource "aws_route_table_association" "db1_private_association" {
-  route_table_id = aws_route_table.private_rt.id
-  subnet_id = aws_subnet.subnets[2].id
-}
+# resource "aws_route_table_association" "db1_private_association" {
+#   route_table_id = aws_route_table.private_rt.id
+#   subnet_id = aws_subnet.subnets[2].id
+# }
 
-resource "aws_route_table_association" "db2_private_association" {
-  route_table_id = aws_route_table.private_rt.id
-  subnet_id = aws_subnet.subnets[3].id
-}
+# resource "aws_route_table_association" "db2_private_association" {
+#   route_table_id = aws_route_table.private_rt.id
+#   subnet_id = aws_subnet.subnets[3].id
+# }
