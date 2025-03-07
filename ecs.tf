@@ -9,8 +9,8 @@ resource "aws_launch_template" "ecs_launch_template" {
   instance_type = "t2.micro"              # Adjust instance type as needed
 
   network_interfaces {
-    security_groups = [data.terraform_remote_state.network.output.app_security_group_id.id]#[aws_security_group.ecs_sg.id]
-    subnet_id       = data.terraform_remote_state.network.output.app1-subnet-id.id#var.subnet_ids[0] # Use the first subnet from the list
+    security_groups = [data.terraform_remote_state.network.outputs.app_security_group_id.id]#[aws_security_group.ecs_sg.id]
+    subnet_id       = data.terraform_remote_state.network.outputs.app1-subnet-id.id#var.subnet_ids[0] # Use the first subnet from the list
   }
 
   tag_specifications {
@@ -32,15 +32,8 @@ resource "aws_autoscaling_group" "ecs_asg" {
     version = "$Latest"
   }
 
-  vpc_zone_identifier = data.terraform_remote_state.network.output.app1-subnet-id.id
-
-  tags = [
-    {
-      key                 = "Name"
-      value               = "ECS-Cluster"
-      propagate_at_launch = true
-    }
-  ]
+  vpc_zone_identifier = data.terraform_remote_state.network.outputs.app1-subnet-id.id
+ 
 }
 
 # ECS Service Role
