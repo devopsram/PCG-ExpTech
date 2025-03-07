@@ -132,4 +132,4 @@ resource "aws_route_table_association" "app2_public_association" {
 # resource "aws_route_table_association" "db2_private_association" {
 #   route_table_id = aws_route_table.private_rt.id
 #   subnet_id = aws_subnet.subnets[3].id
-# }
+## }
