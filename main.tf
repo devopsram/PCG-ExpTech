@@ -114,12 +114,12 @@ resource "aws_route_table" "private_rt" {
   }
 }
 
-resource "aws_route_table_association" "web1_public_association" {
+resource "aws_route_table_association" "app1_public_association" {
   route_table_id = aws_route_table.public_rt.id
   subnet_id = aws_subnet.subnets[0].id
 }
 
-resource "aws_route_table_association" "web2_public_association" {
+resource "aws_route_table_association" "app2_public_association" {
   route_table_id = aws_route_table.public_rt.id
   subnet_id = aws_subnet.subnets[1].id
 }
