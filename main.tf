@@ -171,7 +171,6 @@ resource "aws_launch_template" "ecs_launch_template" {
 
 # Auto Scaling Group for ECS Instances
 resource "aws_autoscaling_group" "ecs_asg" {
-  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
   desired_capacity = 2
   max_size         = 3
   min_size         = 1
@@ -180,7 +179,8 @@ resource "aws_autoscaling_group" "ecs_asg" {
     id      = aws_launch_template.ecs_launch_template.id
     version = "$Latest"
   }
-  
+  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
+
   tag {
    key                 = "AmazonECSManaged"
    value               = true
