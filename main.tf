@@ -169,7 +169,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
     version = "$Latest"
   }
 
-  vpc_zone_identifier = [aws_subnet.subnets[0].id]
+  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
   tag {
    key                 = "AmazonECSManaged"
    value               = true
