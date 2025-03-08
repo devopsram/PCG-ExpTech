@@ -356,7 +356,7 @@ resource "aws_ecs_service" "ecs_service" {
  load_balancer {
    target_group_arn = aws_lb_target_group.ecs_tg.arn
    container_name   = "web"
-   container_port   = 80
+   container_port   = 5000
  }
 
 #  triggers = {
