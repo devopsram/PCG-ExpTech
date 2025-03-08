@@ -141,7 +141,7 @@ resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
   image_id      = "ami-0c7af5fe939f2677f" # Replace with a valid ECS-optimized AMI ID
   instance_type = "t3.medium"              # Adjust instance type as needed
-  key_name = "ecsinstance"
+  key_name = "ecsInstance"
 
   network_interfaces {
     security_groups = [aws_security_group.app-sg.id]
