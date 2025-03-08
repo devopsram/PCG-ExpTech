@@ -206,7 +206,7 @@ resource "aws_lb_target_group" "ecs_tg" {
  name        = "ecs-target-group"
  port        = 80
  protocol    = "HTTP"
- target_type = "instance"
+ target_type = "ip"
  vpc_id      = aws_vpc.primary_vpc.id
 
  health_check {
@@ -309,7 +309,7 @@ resource "aws_ecs_task_definition" "task" {
   family                   = "service-task"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  network_mode             = "bridge"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
@@ -317,11 +317,11 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name      = "web"
-      image     = "my-python-webapp:latest"
+      image     = "public.ecr.aws/f9n5f1l7/dgs:latest"
       essential = true
       portMappings = [
         {
-          containerPort = 5000
+          containerPort = 80
           hostPort      = 80
           protocol      = "tcp"
         }
@@ -356,7 +356,7 @@ resource "aws_ecs_service" "ecs_service" {
  load_balancer {
    target_group_arn = aws_lb_target_group.ecs_tg.arn
    container_name   = "web"
-   container_port   = 5000
+   container_port   = 80
  }
 
 #  triggers = {
