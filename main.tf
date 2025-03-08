@@ -184,7 +184,7 @@ resource "aws_lb" "ecs_alb" {
  internal           = false
  load_balancer_type = "application"
  security_groups    = [aws_security_group.app-sg.id]
- subnets            = [aws_subnet.subnets[0].id]
+ subnets            = [aws_subnet.subnets[0].id, aws_subnet.subnets[1]]
 
  tags = {
    Name = "ecs-alb"
@@ -309,7 +309,7 @@ resource "aws_ecs_task_definition" "task" {
   family                   = "service-task"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  network_mode             = "awsvpc"
+  network_mode             = "none"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
   memory                   = "512"
