@@ -147,9 +147,9 @@ resource "aws_launch_template" "ecs_launch_template" {
     security_groups = [aws_security_group.app-sg.id]
     subnet_id       = aws_subnet.subnets[0].id # Use the first subnet from the list
   }
-  # iam_instance_profile {
-  #  name = "ecsInstanceRole"
-  # }
+  iam_instance_profile {
+   name = "ecsInstanceRole"
+  }
   
   block_device_mappings {
    device_name = "/dev/xvda"
