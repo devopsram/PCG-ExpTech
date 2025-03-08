@@ -359,9 +359,9 @@ resource "aws_ecs_service" "ecs_service" {
    container_port   = 80
  }
 
- triggers = {
-   redeployment = timestamp()
- }
+#  triggers = {
+#    redeployment = timestamp()
+#  }
 
  depends_on = [aws_autoscaling_group.ecs_asg]
 }
