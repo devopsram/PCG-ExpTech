@@ -143,12 +143,20 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
   image_id      = "ami-0c7af5fe939f2677f" # Replace with a valid ECS-optimized AMI ID
-  instance_type = "t2.micro"              # Adjust instance type as needed
+  instance_type = "t3.medium"              # Adjust instance type as needed
 
   network_interfaces {
     security_groups = [aws_security_group.app-sg.id]
     subnet_id       = aws_subnet.subnets[0].id # Use the first subnet from the list
   }
+  
+  block_device_mappings {
+   device_name = "/dev/xvda"
+   ebs {
+     volume_size = 30
+     volume_type = "gp2"
+   }
+ }
 
   tag_specifications {
     resource_type = "instance"
@@ -156,6 +164,8 @@ resource "aws_launch_template" "ecs_launch_template" {
       Name = "ECS-Cluster-Instance"
     }
   }
+
+  user_data = filebase64("${path.module}/ecs.sh")
 }
 
 # Auto Scaling Group for ECS Instances
