@@ -135,19 +135,20 @@ resource "aws_route_table_association" "app2_public_association" {
 ## }
 
 
-# ECS Cluster
-resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "pcg-ecs-cluster"
-}
+
 # Launch Configuration for ECS Instances
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
   image_id      = "ami-0c7af5fe939f2677f" # Replace with a valid ECS-optimized AMI ID
   instance_type = "t3.medium"              # Adjust instance type as needed
+  key_name = "ecsinstance"
 
   network_interfaces {
     security_groups = [aws_security_group.app-sg.id]
     subnet_id       = aws_subnet.subnets[0].id # Use the first subnet from the list
+  }
+  iam_instance_profile {
+   name = "ecsInstanceRole"
   }
   
   block_device_mappings {
@@ -170,6 +171,7 @@ resource "aws_launch_template" "ecs_launch_template" {
 
 # Auto Scaling Group for ECS Instances
 resource "aws_autoscaling_group" "ecs_asg" {
+  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
   desired_capacity = 2
   max_size         = 3
   min_size         = 1
@@ -178,8 +180,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
     id      = aws_launch_template.ecs_launch_template.id
     version = "$Latest"
   }
-
-  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
+  
   tag {
    key                 = "AmazonECSManaged"
    value               = true
@@ -224,6 +225,11 @@ resource "aws_lb_target_group" "ecs_tg" {
  }
 }
 
+# ECS Cluster
+resource "aws_ecs_cluster" "ecs_cluster" {
+  name = "pcg-ecs-cluster"
+}
+
 #Capacity Providers
 
 resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
@@ -236,7 +242,7 @@ resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
      maximum_scaling_step_size = 1000
      minimum_scaling_step_size = 1
      status                    = "ENABLED"
-     target_capacity           = 3
+     target_capacity           = 1
    }
  }
 }
@@ -289,36 +295,17 @@ resource "aws_iam_role" "ecs_execution_role" {
           Service = "ecs-tasks.amazonaws.com"
         }
         Effect    = "Allow"
-        Sid       = ""
       }
     ]
   })
 }
 
-# Create ECS Task Role
-resource "aws_iam_role" "ecs_task_role" {
-  name = "ecsTaskRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-        Effect    = "Allow"
-        Sid       = ""
-      }
-    ]
-  })
-}
 
 # Define the ECS Task Definition
 resource "aws_ecs_task_definition" "task" {
   family                   = "service-task"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  #task_role_arn            = aws_iam_role.ecs_task_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
