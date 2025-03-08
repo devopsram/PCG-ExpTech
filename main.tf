@@ -233,3 +233,29 @@ resource "aws_iam_role" "ecs_task_role" {
     ]
   })
 }
+
+# Define the ECS Task Definition
+resource "aws_ecs_task_definition" "task" {
+  family                   = "service-task"
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["EC2"]
+  cpu                      = "256"
+  memory                   = "512"
+
+  container_definitions = jsonencode([
+    {
+      name      = "web"
+      image     = "my-python-webapp:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+          protocol      = "tcp"
+        }
+      ]
+    }
+  ])
+}
