@@ -142,7 +142,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 # Launch Configuration for ECS Instances
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
-  image_id      = "ami-0c55b159cbfafe1f0" # Replace with a valid ECS-optimized AMI ID
+  image_id      = "ami-001a96e83821b6457" # Replace with a valid ECS-optimized AMI ID
   instance_type = "t2.micro"              # Adjust instance type as needed
 
   network_interfaces {
