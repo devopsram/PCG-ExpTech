@@ -146,7 +146,7 @@ resource "aws_launch_template" "ecs_launch_template" {
   instance_type = "t2.micro"              # Adjust instance type as needed
 
   network_interfaces {
-    security_groups = aws_security_group.app-sg.id
+    security_groups = [aws_security_group.app-sg.id]
     subnet_id       = aws_subnet.subnets[0].id # Use the first subnet from the list
   }
 
