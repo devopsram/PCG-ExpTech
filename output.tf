@@ -12,19 +12,19 @@ output "vpc_id" {
 }
 
 output "app1-subnet-id" {
-  value = aws_subnet.subnets[0].id
+  value = aws_subnet.pub_subnet1.id
 }
 
 output "app2-subnet-id" {
-  value = aws_subnet.subnets[1].id
+  value = aws_subnet.pub_subnet2.id
 }
 
 output "db1-subnet-id" {
-  value = aws_subnet.subnets[2].id
+  value = aws_subnet.private_subnet1.id
 }
 
 output "db2-subet-id" {
-  value = aws_subnet.subnets[3].id
+  value = aws_subnet.private_subnet2.id
 }
 
 output "app_security_group_id" {

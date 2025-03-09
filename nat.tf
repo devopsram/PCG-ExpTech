@@ -3,7 +3,7 @@ resource "aws_eip" "elastic_ip" {
 
 resource "aws_nat_gateway" "private_nat" {
   allocation_id = aws_eip.elastic_ip.id
-  subnet_id = aws_subnet.subnets[0].id
+  subnet_id = aws_subnet.pub_subnet1.id
   tags = {
     Name = "NatForDB"
   }
@@ -22,7 +22,7 @@ resource "aws_route_table" "Nat_route_table" {
 }
 
 resource "aws_route_table_association" "assicuate_routetable_to_privatesubnet" {
-  subnet_id = aws_subnet.subnets[2].id
+  subnet_id = aws_subnet.private_subnet1.id
   route_table_id = aws_route_table.Nat_route_table.id
 }
 
