@@ -171,7 +171,7 @@ resource "aws_route_table_association" "app2_public_association" {
 # Launch Configuration for ECS Instances
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
-  image_id      = "ami-0c7af5fe939f2677f" # Replace with a valid ECS-optimized AMI ID
+  image_id      = "ami-08b5b3a93ed654d19" # Replace with a valid ECS-optimized AMI ID
   instance_type = "t2.micro"              # Adjust instance type as needed
   key_name = "ecsInstance"
   
