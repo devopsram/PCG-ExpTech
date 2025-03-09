@@ -12,3 +12,5 @@ sudo start ecs
 #Adding cluster name in ecs config
 echo ECS_CLUSTER=pcg-ecs-cluster >> /etc/ecs/ecs.config
 cat /etc/ecs/ecs.config | grep "ECS_CLUSTER"
+sudo systemctl enable ecs
+sudo systemctl start ecs

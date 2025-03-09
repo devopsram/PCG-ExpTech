@@ -348,7 +348,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name      = "web"
-      image     = "public.ecr.aws/f9n5f1l7/dgs:latest"
+      image     = "nginx:latest"
       essential = true
       portMappings = [
         {
