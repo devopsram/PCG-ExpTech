@@ -140,7 +140,7 @@ resource "aws_route_table_association" "app2_public_association" {
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
   image_id      = "ami-0c7af5fe939f2677f" # Replace with a valid ECS-optimized AMI ID
-  instance_type = "t3.medium"              # Adjust instance type as needed
+  instance_type = "t2.micro"              # Adjust instance type as needed
   key_name = "ecsInstance"
 
   network_interfaces {
@@ -172,14 +172,14 @@ resource "aws_launch_template" "ecs_launch_template" {
 # Auto Scaling Group for ECS Instances
 resource "aws_autoscaling_group" "ecs_asg" {
   desired_capacity = 2
-  max_size         = 3
+  max_size         = 2
   min_size         = 1
 
   launch_template {
     id      = aws_launch_template.ecs_launch_template.id
     version = "$Latest"
   }
-  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
+  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id, aws_security_group.app-sg.id]
 
   tag {
    key                 = "AmazonECSManaged"
@@ -259,29 +259,6 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_capacity_provider" {
  }
 }
 
-# ECS Service Role
-resource "aws_iam_role" "ecs_service_role" {
-  name = "ecsServiceRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ecs.amazonaws.com"
-      }
-    }]
-  })
-}
-
-# Attach Policy to ECS Service Role
-# resource "aws_iam_role_policy_attachment" "ecs_service_policy" {
-#   role       = aws_iam_role.ecs_service_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonECSServiceRolePolicy"
-# }
-
-
 # Create ECS Execution Role
 resource "aws_iam_role" "ecs_execution_role" {
   name = "ecsExecutionRole"
@@ -305,7 +282,7 @@ resource "aws_iam_role" "ecs_execution_role" {
 resource "aws_ecs_task_definition" "task" {
   family                   = "service-task"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  #task_role_arn            = aws_iam_role.ecs_task_role.arn
+  task_role_arn            = aws_iam_role.ecs_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
