@@ -187,7 +187,10 @@ resource "aws_iam_role_policy_attachment" "ecs_instance_role_attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
-
+resource "aws_iam_instance_profile" "ecs_instance_profile" {
+  name = "ecsInstanceProfile"
+  role = aws_iam_role.ecs_instance_role.name
+}
 # Launch Configuration for ECS Instances
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
@@ -201,7 +204,7 @@ resource "aws_launch_template" "ecs_launch_template" {
     subnet_id       = aws_subnet.pub_subnet1.id # Use the first subnet from the list
   }
    iam_instance_profile {
-    name = aws_iam_role.ecs_instance_role.name
+    name = aws_iam_instance_profile.ecs_instance_profile.name
    }
   
   block_device_mappings {
