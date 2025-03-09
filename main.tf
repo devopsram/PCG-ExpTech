@@ -201,7 +201,7 @@ resource "aws_launch_template" "ecs_launch_template" {
     subnet_id       = aws_subnet.pub_subnet1.id # Use the first subnet from the list
   }
    iam_instance_profile {
-    name = aws_iam_role.ecs_instance_role.arn
+    name = aws_iam_role.ecs_instance_role.name
    }
   
   block_device_mappings {
