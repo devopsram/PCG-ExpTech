@@ -179,7 +179,8 @@ resource "aws_autoscaling_group" "ecs_asg" {
     id      = aws_launch_template.ecs_launch_template.id
     version = "$Latest"
   }
-  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id, aws_security_group.app-sg.id]
+  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
+  
 
   tag {
    key                 = "AmazonECSManaged"
