@@ -5,13 +5,45 @@ resource "aws_vpc" "primary_vpc" {
   }
 }
 
-resource "aws_subnet" "subnets" {
+resource "aws_subnet" "pub_subnet1" {
   vpc_id = aws_vpc.primary_vpc.id
-  count = length(var.subnet_cidrs)
-  availability_zone = var.subnet_azs[count.index]
-  cidr_block = var.subnet_cidrs[count.index]
+  #count = length(var.subnet_cidrs)
+  availability_zone = var.subnet_azs[0]
+  cidr_block = var.subnet_cidrs[0]
   tags = {
-    Name = var.subnet_names[count.index]
+    Name = var.subnet_names[0]
+  }
+  map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "pub_subnet2" {
+  vpc_id = aws_vpc.primary_vpc.id
+  #count = length(var.subnet_cidrs)
+  availability_zone = var.subnet_azs[1]
+  cidr_block = var.subnet_cidrs[1]
+  tags = {
+    Name = var.subnet_names[1]
+  }
+  map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "private_subnet1" {
+  vpc_id = aws_vpc.primary_vpc.id
+  #count = length(var.subnet_cidrs)
+  availability_zone = var.subnet_azs[2]
+  cidr_block = var.subnet_cidrs[2]
+  tags = {
+    Name = var.subnet_names[2]
+  }
+}
+
+resource "aws_subnet" "private_subnet2" {
+  vpc_id = aws_vpc.primary_vpc.id
+  #count = length(var.subnet_cidrs)
+  availability_zone = var.subnet_azs[3]
+  cidr_block = var.subnet_cidrs[3]
+  tags = {
+    Name = var.subnet_names[3]
   }
 }
 
@@ -116,12 +148,12 @@ resource "aws_route_table" "private_rt" {
 
 resource "aws_route_table_association" "app1_public_association" {
   route_table_id = aws_route_table.public_rt.id
-  subnet_id = aws_subnet.subnets[0].id
+  subnet_id = aws_subnet.pub_subnet1.id
 }
 
 resource "aws_route_table_association" "app2_public_association" {
   route_table_id = aws_route_table.public_rt.id
-  subnet_id = aws_subnet.subnets[1].id
+  subnet_id = aws_subnet.pub_subnet2.id
 }
 
 # resource "aws_route_table_association" "db1_private_association" {
@@ -142,10 +174,11 @@ resource "aws_launch_template" "ecs_launch_template" {
   image_id      = "ami-0c7af5fe939f2677f" # Replace with a valid ECS-optimized AMI ID
   instance_type = "t2.micro"              # Adjust instance type as needed
   key_name = "ecsInstance"
+  
 
   network_interfaces {
     security_groups = [aws_security_group.app-sg.id]
-    subnet_id       = aws_subnet.subnets[0].id # Use the first subnet from the list
+    subnet_id       = aws_subnet.pub_subnet1.id # Use the first subnet from the list
   }
   # iam_instance_profile {
   #  name = "ecsInstanceRole"
@@ -179,7 +212,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
     id      = aws_launch_template.ecs_launch_template.id
     version = "$Latest"
   }
-  vpc_zone_identifier = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
+  vpc_zone_identifier = [aws_subnet.pub_subnet1.id, aws_subnet.pub_subnet2.id]
   
 
   tag {
@@ -196,7 +229,7 @@ resource "aws_lb" "ecs_alb" {
  internal           = false
  load_balancer_type = "application"
  security_groups    = [aws_security_group.app-sg.id]
- subnets            = [aws_subnet.subnets[0].id, aws_subnet.subnets[1].id]
+ subnets            = [aws_subnet.pub_subnet1.id, aws_subnet.pub_subnet2.id]
 
  tags = {
    Name = "ecs-alb"
@@ -314,7 +347,7 @@ resource "aws_ecs_service" "ecs_service" {
  desired_count   = 2
 
  network_configuration {
-   subnets         = [aws_subnet.subnets[0].id]
+   subnets         = [aws_subnet.pub_subnet1.id]
    security_groups = [aws_security_group.app-sg.id]
  }
 
