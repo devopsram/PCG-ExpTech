@@ -5,7 +5,7 @@
 # Update all packages
 
 sudo yum update -y
-sudo dnf install ecs-init
+sudo dnf install ecs-init -y
 sudo systemctl enable ecs
 sudo systemctl start ecs
 #sudo service docker start
