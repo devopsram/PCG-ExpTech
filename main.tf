@@ -168,7 +168,7 @@ resource "aws_db_subnet_group" "main" {
  
 resource "aws_db_instance" "my_rds_instance" {
   allocated_storage    = 20
-  db_name              = ""
+  #db_name              = ""
   storage_type         = "gp2"
   engine               = "mysql"  # Modify for PostgreSQL, SQL Server, etc.
   engine_version       = "8.0"    # Modify according to your needs
