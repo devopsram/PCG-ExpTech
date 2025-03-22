@@ -228,7 +228,7 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
   image_id      = "ami-08b5b3a93ed654d19" # Replace with a valid ECS-optimized AMI ID
-  instance_type = "t2.micro"              # Adjust instance type as needed
+  instance_type = "t3.medium"              # Adjust instance type as needed
   key_name = "ecsInstance"
   
 
@@ -376,7 +376,7 @@ resource "aws_ecs_task_definition" "task" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["EC2"]
   cpu                      = "256"
-  memory                   = "512"
+  memory                   = "256"
 
   container_definitions = <<DEFINITION
     [
