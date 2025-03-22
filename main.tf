@@ -168,11 +168,11 @@ resource "aws_db_subnet_group" "main" {
  
 resource "aws_db_instance" "my_rds_instance" {
   allocated_storage    = 20
+  db_name              = "mydatabase"
   storage_type         = "gp2"
   engine               = "mysql"  # Modify for PostgreSQL, SQL Server, etc.
   engine_version       = "8.0"    # Modify according to your needs
   instance_class       = "db.t3.micro"  # Change instance class based on your needs
-  db_name              = "mydatabase"
   username             = "myuser"
   password             = "mypassword"  # Use a more secure method for production (e.g., secrets manager)
   parameter_group_name = "default.mysql8.0"  # Modify for other engines
