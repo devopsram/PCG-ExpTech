@@ -403,7 +403,7 @@ resource "aws_ecs_service" "ecs_service" {
  desired_count   = 1
 
  network_configuration {
-   subnets         = [aws_subnet.pub_subnet1.id,aws_]
+   subnets         = [aws_subnet.pub_subnet1.id]
    security_groups = [aws_security_group.app-sg.id]
  }
 
