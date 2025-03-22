@@ -156,6 +156,39 @@ resource "aws_route_table_association" "app2_public_association" {
   subnet_id = aws_subnet.pub_subnet2.id
 }
 
+#------------------SQL Server-------------------------------
+resource "aws_db_subnet_group" "main" {
+  name       = "my-db-subnet-group"
+  subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+ 
+  tags = {
+    Name = "my-db-subnet-group"
+  }
+}
+ 
+resource "aws_db_instance" "my_rds_instance" {
+  allocated_storage    = 20
+  storage_type         = "gp2"
+  engine               = "mysql"  # Modify for PostgreSQL, SQL Server, etc.
+  engine_version       = "8.0"    # Modify according to your needs
+  instance_class       = "db.t3.micro"  # Change instance class based on your needs
+  db_name              = "mydatabase"
+  username             = "myuser"
+  password             = "mypassword"  # Use a more secure method for production (e.g., secrets manager)
+  parameter_group_name = "default.mysql8.0"  # Modify for other engines
+  db_subnet_group_name = aws_db_subnet_group.main.name
+  vpc_security_group_ids = [aws_security_group.dbsg.id]
+ 
+  multi_az             = true
+  publicly_accessible  = true
+  skip_final_snapshot  = true
+ 
+  tags = {
+    Name = "MyRDSInstance"
+  }
+}
+ 
+ 
 # resource "aws_route_table_association" "db1_private_association" {
 #   route_table_id = aws_route_table.private_rt.id
 #   subnet_id = aws_subnet.subnets[2].id
@@ -370,7 +403,7 @@ resource "aws_ecs_service" "ecs_service" {
  desired_count   = 1
 
  network_configuration {
-   subnets         = [aws_subnet.pub_subnet1.id]
+   subnets         = [aws_subnet.pub_subnet1.id,aws_]
    security_groups = [aws_security_group.app-sg.id]
  }
 
