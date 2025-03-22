@@ -367,6 +367,12 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
+resource "aws_iam_policy_attachment" "ecs_policy_attachment" {
+  name       = "ecs-task-execution-role-policy-attachment"
+  roles      = [aws_iam_role.ecs_execution_role.name]
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 
 # Define the ECS Task Definition
 resource "aws_ecs_task_definition" "task" {
