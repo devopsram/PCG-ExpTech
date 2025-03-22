@@ -156,37 +156,37 @@ resource "aws_route_table_association" "app2_public_association" {
   subnet_id = aws_subnet.pub_subnet2.id
 }
 
-#------------------SQL Server-------------------------------
-resource "aws_db_subnet_group" "main" {
-  name       = "my-db-subnet-group"
-  subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
+# #------------------SQL Server-------------------------------
+# resource "aws_db_subnet_group" "main" {
+#   name       = "my-db-subnet-group"
+#   subnet_ids = [aws_subnet.private_subnet1.id, aws_subnet.private_subnet2.id]
  
-  tags = {
-    Name = "my-db-subnet-group"
-  }
-}
+#   tags = {
+#     Name = "my-db-subnet-group"
+#   }
+# }
  
-resource "aws_db_instance" "my_rds_instance" {
-  allocated_storage    = 20
-  #db_name              = ""
-  storage_type         = "gp2"
-  engine               = "mysql"  # Modify for PostgreSQL, SQL Server, etc.
-  engine_version       = "8.0"    # Modify according to your needs
-  instance_class       = "db.t3.micro"  # Change instance class based on your needs
-  username             = "myuser"
-  password             = "mypassword"  # Use a more secure method for production (e.g., secrets manager)
-  parameter_group_name = "default.mysql8.0"  # Modify for other engines
-  db_subnet_group_name = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [aws_security_group.dbsg.id]
+# resource "aws_db_instance" "my_rds_instance" {
+#   allocated_storage    = 20
+#   #db_name              = ""
+#   storage_type         = "gp2"
+#   engine               = "mysql"  # Modify for PostgreSQL, SQL Server, etc.
+#   engine_version       = "8.0"    # Modify according to your needs
+#   instance_class       = "db.t3.micro"  # Change instance class based on your needs
+#   username             = "myuser"
+#   password             = "mypassword"  # Use a more secure method for production (e.g., secrets manager)
+#   parameter_group_name = "default.mysql8.0"  # Modify for other engines
+#   db_subnet_group_name = aws_db_subnet_group.main.name
+#   vpc_security_group_ids = [aws_security_group.dbsg.id]
  
-  multi_az             = true
-  publicly_accessible  = false
-  skip_final_snapshot  = true
+#   multi_az             = true
+#   publicly_accessible  = false
+#   skip_final_snapshot  = true
  
-  tags = {
-    Name = "MyRDSInstance"
-  }
-}
+#   tags = {
+#     Name = "MyRDSInstance"
+#   }
+# }
  
  
 # resource "aws_route_table_association" "db1_private_association" {
@@ -378,20 +378,29 @@ resource "aws_ecs_task_definition" "task" {
   cpu                      = "256"
   memory                   = "512"
 
-  container_definitions = jsonencode([
-    {
-      name      = "web"
-      image     = "nginx:latest"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 80
-          hostPort      = 80
-          protocol      = "tcp"
+  container_definitions = <<DEFINITION
+    [
+      {
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "secretOptions": null,
+            "options": {
+              "awslogs-group": "/ecs/task-definition-dev",
+              "awslogs-region": "us-east-1",
+              "awslogs-stream-prefix": "ecs"
+            }
+          },
+        "image": "nginx:latest",
+        "name": "web",
+        "portMappings": [
+          {
+            "containerPort": 80,
+            "hostPort": 80
+          }
+        ] 
         }
-      ]
-    }
-  ])
+    ]
+    DEFINITION
 }
 
 ## ECS service
