@@ -180,7 +180,7 @@ resource "aws_db_instance" "my_rds_instance" {
   vpc_security_group_ids = [aws_security_group.dbsg.id]
  
   multi_az             = true
-  publicly_accessible  = true
+  publicly_accessible  = false
   skip_final_snapshot  = true
  
   tags = {
