@@ -401,7 +401,7 @@ resource "aws_iam_policy" "custom_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment" {
-  role       = aws_iam_role.ecs_execution_role.arn
+  role       = aws_iam_role.ecs_execution_role.name
   policy_arn = aws_iam_policy.custom_policy.arn
 }
 
