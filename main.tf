@@ -373,6 +373,37 @@ resource "aws_iam_policy_attachment" "ecs_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/task-definition-dev"
+  retention_in_days = 7
+}
+
+data "aws_iam_policy_document" "custom_policy" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+
+    resources = [
+      aws_cloudwatch_log_group.ecs_log_group.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "custom_policy" {
+  name        = "CustomCloudWatchLogsPolicy"
+  description = "Policy to create CloudWatch log groups for ECS"
+
+  policy = data.aws_iam_policy_document.custom_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment" {
+  role       = aws_iam_role.ecs_execution_role.arn
+  policy_arn = aws_iam_policy.custom_policy.arn
+}
 
 # Define the ECS Task Definition
 resource "aws_ecs_task_definition" "task" {
