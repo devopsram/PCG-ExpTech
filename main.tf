@@ -407,7 +407,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment"
 
 # Define the ECS Task Definition
 resource "aws_ecs_task_definition" "task" {
-  family                   = "service-task"
+  family                   = "awslogs-task"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_execution_role.arn
   network_mode             = "awsvpc"
