@@ -427,7 +427,7 @@ resource "aws_ecs_task_definition" "task" {
               "awslogs-stream-prefix": "ecs"
             }
           },
-        "image": "nginx:latest",
+        "image": "hello-world",
         "name": "web",
         "portMappings": [
           {
