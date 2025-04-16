@@ -198,6 +198,12 @@ resource "aws_route_table_association" "app2_public_association" {
 #   route_table_id = aws_route_table.private_rt.id
 #   subnet_id = aws_subnet.subnets[3].id
 ## }
+#-------------------ECR Repository------------------------
+resource "aws_ecr_repository" "dev" {
+  name = var.repository_name
+  image_tag_mutability = "MUTABLE"
+}
+
 resource "aws_iam_role" "ecs_instance_role" {
   name = "ecsInstanceRole"
 

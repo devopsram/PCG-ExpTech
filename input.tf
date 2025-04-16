@@ -23,3 +23,11 @@ variable "subnet_names" {
    default = ["app-1","app-2","db-1","db-2"]
    description = "This is list of names of subnets"
 }
+
+#-----------------ECR Variables---------------
+variable "repository_name" {
+  description = "The name of the ECR repository"
+  default = "repo-server"
+    type        = string
+ 
+}
