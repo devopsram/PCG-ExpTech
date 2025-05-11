@@ -2,11 +2,50 @@
 resource "aws_iam_policy_attachment" "attachinfrapolicies" {
   name = "iampolicyattachment"
   count = length(local.policies)
-  role  = data.aws_iam_role.infracreationrole.name
+  roles  = [data.aws_iam_role.infracreationrole.name]
   policy_arn = local.policies[count.index]
 
 }
 
+resource "aws_iam_policy" "cloudwatch_ecs_policy" {
+  name        = "CloudWatchECSCreatePolicy"
+  description = "IAM policy to allow creation of CloudWatch log group and ECS task definition"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "logs:CreateLogGroup",
+          "logs:PutRetentionPolicy",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:ListTagsLogGroup"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ecs:RegisterTaskDefinition",
+          "ecs:DescribeTaskDefinition",
+          "ecs:ListTaskDefinitions"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "cloudwatch_ecs_taskdefinition" {
+  name = "iampolicyattachmentforecstask"
+  roles  = [data.aws_iam_role.infracreationrole.name]
+  policy_arn = aws_iam_policy.cloudwatch_ecs_policy.arn
+
+}
 
 resource "aws_vpc" "primary_vpc" {
   cidr_block = var.vpc_cidr
@@ -208,6 +247,43 @@ resource "aws_route_table_association" "app2_public_association" {
 #   route_table_id = aws_route_table.private_rt.id
 #   subnet_id = aws_subnet.subnets[3].id
 ## }
+resource "aws_iam_policy" "ecr_policy" {
+  name        = "ECRPolicy"
+  description = "IAM policy to allow ECR operations"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:GetRepositoryPolicy",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:CreateRepository",
+          "ecr:DeleteRepository",
+          "ecr:DeleteRepositoryPolicy"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "attachECSpolicies" {
+  name = "iampolicyattachmentfor ECS"
+  roles  = [data.aws_iam_role.infracreationrole.name]
+  policy_arn = aws_iam_policy.ecr_policy.arn
+
+}
+
 #-------------------ECR Repository------------------------
 resource "aws_ecr_repository" "dev" {
   name = var.repository_name
@@ -394,6 +470,7 @@ resource "aws_cloudwatch_log_group" "ecs_log_group" {
   retention_in_days = 7
 }
 
+
 data "aws_iam_policy_document" "custom_policy" {
   statement {
     effect = "Allow"
@@ -421,6 +498,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment"
   policy_arn = aws_iam_policy.custom_policy.arn
 }
 
+
 # Define the ECS Task Definition
 resource "aws_ecs_task_definition" "task" {
   family                   = "awslogs-task"
@@ -438,12 +516,11 @@ resource "aws_ecs_task_definition" "task" {
             "logDriver": "awslogs",
             "secretOptions": null,
             "options": {
-              "awslogs-group": "/ecs/task-definition-dev",
               "awslogs-region": "us-east-1",
               "awslogs-stream-prefix": "ecs"
             }
           },
-        "image": "hello-world",
+        "image": "nginx",
         "name": "web",
         "portMappings": [
           {

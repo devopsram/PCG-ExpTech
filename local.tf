@@ -8,7 +8,8 @@ locals {
   policies = [
     "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-    "arn:aws:iam::aws:policy/AmazonECSFullAccess",
-    "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
+    "arn:aws:iam::aws:policy/AmazonECS_FullAccess",
+    "arn:aws:iam::aws:policy/AmazonRDSFullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchFullAccess"
   ]
 }
