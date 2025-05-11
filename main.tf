@@ -32,7 +32,33 @@ resource "aws_iam_policy" "cloudwatch_ecs_policy" {
         Action   = [
           "ecs:RegisterTaskDefinition",
           "ecs:DescribeTaskDefinition",
-          "ecs:ListTaskDefinitions"
+          "ecs:ListTaskDefinitions",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchDeleteImage",
+          "ecr:BatchGetImage",
+          "ecr:CompleteLayerUpload",
+          "ecr:CreateRepository",
+          "ecr:DeleteRepository",
+          "ecr:DeleteRepositoryPolicy",
+          "ecr:DescribeImageScanFindings",
+          "ecr:DescribeImages",
+          "ecr:DescribeRepositories",
+          "ecr:GetAuthorizationToken",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetLifecyclePolicy",
+          "ecr:GetLifecyclePolicyPreview",
+          "ecr:GetRepositoryPolicy",
+          "ecr:InitiateLayerUpload",
+          "ecr:ListImages",
+          "ecr:ListTagsForResource",
+          "ecr:PutImage",
+          "ecr:PutImageScanningConfiguration",
+          "ecr:PutImageTagMutability",
+          "ecr:PutLifecyclePolicy",
+          "ecr:SetRepositoryPolicy",
+          "ecr:TagResource",
+          "ecr:UntagResource",
+          "ecr:UploadLayerPart"
         ]
         Resource = "*"
       }
@@ -247,42 +273,6 @@ resource "aws_route_table_association" "app2_public_association" {
 #   route_table_id = aws_route_table.private_rt.id
 #   subnet_id = aws_subnet.subnets[3].id
 ## }
-resource "aws_iam_policy" "ecr_policy" {
-  name        = "ECRPolicy"
-  description = "IAM policy to allow ECR operations"
-  
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = [
-          "ecr:BatchGetImage",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:DescribeRepositories",
-          "ecr:ListImages",
-          "ecr:GetRepositoryPolicy",
-          "ecr:PutImage",
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload",
-          "ecr:CreateRepository",
-          "ecr:DeleteRepository",
-          "ecr:DeleteRepositoryPolicy"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy_attachment" "attachECSpolicies" {
-  name = "iampolicyattachmentfor ECS"
-  roles  = [data.aws_iam_role.infracreationrole.name]
-  policy_arn = aws_iam_policy.ecr_policy.arn
-
-}
 
 #-------------------ECR Repository------------------------
 resource "aws_ecr_repository" "dev" {
@@ -319,7 +309,7 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
 # Launch Configuration for ECS Instances
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
-  image_id      = "ami-0654044a68c6cdd61" # Replace with a valid ECS-optimized AMI ID 
+  image_id      = "ami-04596cea465c34ae4" # Replace with a valid ECS-optimized AMI ID ami-0654044a68c6cdd61
   instance_type = "t3.medium"              # Adjust instance type as needed
   key_name = "ecsInstance"
   
@@ -516,6 +506,7 @@ resource "aws_ecs_task_definition" "task" {
             "logDriver": "awslogs",
             "secretOptions": null,
             "options": {
+              "awslogs-group": "/ecs/task-definition-dev",
               "awslogs-region": "us-east-1",
               "awslogs-stream-prefix": "ecs"
             }
