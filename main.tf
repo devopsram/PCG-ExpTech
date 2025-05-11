@@ -233,7 +233,7 @@ resource "aws_iam_instance_profile" "ecs_instance_profile" {
 # Launch Configuration for ECS Instances
 resource "aws_launch_template" "ecs_launch_template" {
   name_prefix   = "ecs-launch-template-"
-  image_id      = "ami-0a2beeba6d1093556" # Replace with a valid ECS-optimized AMI ID
+  image_id      = "ami-0654044a68c6cdd61" # Replace with a valid ECS-optimized AMI ID 
   instance_type = "t3.medium"              # Adjust instance type as needed
   key_name = "ecsInstance"
   
