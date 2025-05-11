@@ -1,3 +1,13 @@
+#Attach policies to IAM role
+resource "aws_iam_policy_attachment" "attachinfrapolicies" {
+  name = "iampolicyattachment"
+  count = length(local.policies)
+  role  = data.aws_iam_role.infracreationrole.name
+  policy_arn = local.policies[count.index]
+
+}
+
+
 resource "aws_vpc" "primary_vpc" {
   cidr_block = var.vpc_cidr
   tags = {
